@@ -1,0 +1,22 @@
+# Dependencies
+frontend/node_modules/
+backend/target/
+
+# Build output
+frontend/dist/
+
+# Test artifacts
+frontend/test-results/
+frontend/playwright-report/
+
+# Env / secrets
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+*.iml
