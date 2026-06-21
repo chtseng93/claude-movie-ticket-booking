@@ -1,6 +1,6 @@
 package com.cinemist.web;
 
-import com.cinemist.entity.Movie;
+import com.cinemist.model.Movie;
 import com.cinemist.service.MovieService;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;

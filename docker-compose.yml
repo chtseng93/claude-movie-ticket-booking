@@ -1,29 +1,8 @@
 services:
-  db:
-    image: postgres:18
-    environment:
-      POSTGRES_DB: cinemist
-      POSTGRES_USER: cinemist
-      POSTGRES_PASSWORD: cinemist
-    ports:
-      - "5432:5432"
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U cinemist"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-
   backend:
     build: ./backend
     ports:
       - "8085:8085"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/cinemist
-      SPRING_DATASOURCE_USERNAME: cinemist
-      SPRING_DATASOURCE_PASSWORD: cinemist
-    depends_on:
-      db:
-        condition: service_healthy
 
   frontend:
     build: ./frontend

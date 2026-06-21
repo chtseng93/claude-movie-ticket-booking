@@ -1,41 +1,37 @@
 package com.cinemist.service;
 
 import com.cinemist.dto.ShowtimeDto;
-import com.cinemist.entity.Showtime;
-import com.cinemist.entity.Theater;
-import com.cinemist.repository.ShowtimeRepository;
-import com.cinemist.repository.TheaterRepository;
+import com.cinemist.model.Showtime;
+import com.cinemist.model.Theater;
+import com.cinemist.store.DataStore;
 import org.springframework.stereotype.Service;
+import java.util.Comparator;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 /** 場次查詢服務。 */
 @Service
 public class ShowtimeService {
-    private final ShowtimeRepository showtimes;
-    private final TheaterRepository theaters;
+    private final DataStore store;
+    public ShowtimeService(DataStore store) { this.store = store; }
 
-    public ShowtimeService(ShowtimeRepository showtimes, TheaterRepository theaters) {
-        this.showtimes = showtimes;
-        this.theaters = theaters;
-    }
-
-    /** 取得某電影的場次列表，含影廳資訊。 */
+    /** 取得某電影的場次列表，依開始時間排序，含影廳資訊。 */
     public List<ShowtimeDto> findByMovie(Long movieId) {
-        return showtimes.findByMovieIdOrderByStartTime(movieId).stream()
+        return store.showtimes.stream()
+                .filter(s -> s.movieId().equals(movieId))
+                .sorted(Comparator.comparing(Showtime::startTime))
                 .map(this::toDto)
                 .toList();
     }
 
     public Showtime findById(Long id) {
-        return showtimes.findById(id)
+        return store.showtimes.stream().filter(s -> s.id().equals(id)).findFirst()
                 .orElseThrow(() -> new NoSuchElementException("Showtime not found"));
     }
 
-    /** 將場次 entity 轉為含影廳的 DTO。 */
     private ShowtimeDto toDto(Showtime s) {
-        Theater t = theaters.findById(s.getTheaterId()).orElseThrow();
-        return new ShowtimeDto(s.getId(), s.getMovieId(), s.getStartTime(), s.getPrice(),
-                new ShowtimeDto.TheaterInfo(t.getId(), t.getName(), t.getLocation()));
+        Theater t = store.theaters.stream().filter(th -> th.id().equals(s.theaterId())).findFirst().orElseThrow();
+        return new ShowtimeDto(s.id(), s.movieId(), s.startTime(), s.price(),
+                new ShowtimeDto.TheaterInfo(t.id(), t.name(), t.location()));
     }
 }
