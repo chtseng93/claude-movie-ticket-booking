@@ -21,5 +21,3 @@ Thumbs.db
 .idea/
 *.iml
 
-# Local planning docs (not for repo)
-docs/render-deploy-plan.md
