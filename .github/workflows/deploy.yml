@@ -10,11 +10,25 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render backend deploy
-        run: curl -s "${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}"
+        env:
+          HOOK: ${{ secrets.RENDER_BACKEND_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "⚠️  RENDER_BACKEND_DEPLOY_HOOK not set — skipping"
+            exit 0
+          fi
+          curl -fS "$HOOK"
 
   deploy-frontend:
     name: Deploy Frontend
     runs-on: ubuntu-latest
     steps:
       - name: Trigger Render frontend deploy
-        run: curl -s "${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}"
+        env:
+          HOOK: ${{ secrets.RENDER_FRONTEND_DEPLOY_HOOK }}
+        run: |
+          if [ -z "$HOOK" ]; then
+            echo "⚠️  RENDER_FRONTEND_DEPLOY_HOOK not set — skipping"
+            exit 0
+          fi
+          curl -fS "$HOOK"
